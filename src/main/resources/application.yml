@@ -1,0 +1,8 @@
+spring:
+  jmx:
+    enabled: true
+  devtools:
+    restart:
+      enabled: true
+server:
+  port: 8080
