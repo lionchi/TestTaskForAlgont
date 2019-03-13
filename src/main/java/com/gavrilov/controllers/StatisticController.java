@@ -2,13 +2,12 @@ package com.gavrilov.controllers;
 
 import com.gavrilov.services.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Controller;
 
-@RestController
-@RequestMapping("/api")
+@Controller
 public class StatisticController {
     private final StatisticsService statisticsService;
 
@@ -17,10 +16,10 @@ public class StatisticController {
         this.statisticsService = statisticsService;
     }
 
-    @GetMapping("/statisticsCpu")
-    public ResponseEntity<String> getStatistics() throws Exception {
+    @MessageMapping("/cpu")
+    @SendTo("/topic/statistic")
+    public String getStatisticsCpu(@Payload String message) throws Exception {
         double processCpuLoad = statisticsService.getProcessCpuLoad();
-        String result = String.format("Загрузка CPU составляет %s", processCpuLoad);
-        return ResponseEntity.ok(result);
+        return "The CPU load is " + processCpuLoad + "%";
     }
 }

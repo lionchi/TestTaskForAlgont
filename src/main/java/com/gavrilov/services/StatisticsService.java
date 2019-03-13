@@ -11,7 +11,7 @@ import java.lang.management.ManagementFactory;
 
 @Service
 public class StatisticsService {
-    @Async
+    //@Async
     public double getProcessCpuLoad() throws Exception {
 
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
