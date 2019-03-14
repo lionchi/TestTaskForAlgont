@@ -13,12 +13,11 @@ function setConnected(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('/my-statistic-cpu');
+    var socket = new SockJS('/ws');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        sendName();
         stompClient.subscribe('/topic/statistic', function (cpu) {
             showGreeting(cpu.body);
         });
@@ -34,9 +33,14 @@ function disconnect() {
 }
 
 function showGreeting(result) {
-    $("#status").append("<tr><td>" + result + "</td></tr>");
+    if (result === "CPU loaded more than 3%") {
+        $("#status").append("<tr style='background-color: red'><td>" + result + "</td></tr>").addClass();
+    } else {
+        $("#status").append("<tr><td>" + result + "</td></tr>");
+    }
 }
 
+// Использовался для тестирования программы
 function sendName() {
     stompClient.send("/api/cpu", {}, "test");
 }
@@ -45,6 +49,10 @@ $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
-    $( "#connect" ).click(function() { connect(); });
-    $( "#disconnect" ).click(function() { disconnect(); });
+    $("#connect").click(function () {
+        connect();
+    });
+    $("#disconnect").click(function () {
+        disconnect();
+    });
 });

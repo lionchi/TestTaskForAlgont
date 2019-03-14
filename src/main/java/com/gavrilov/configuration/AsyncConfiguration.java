@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.scheduling.support.CronTrigger;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -25,6 +26,7 @@ public class AsyncConfiguration implements AsyncConfigurer, SchedulingConfigurer
     public Executor getAsyncExecutor() {
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
         threadPoolTaskScheduler.setPoolSize(Constants.POOL_SIZE);
+        threadPoolTaskScheduler.setThreadNamePrefix("testTaskForAlgont-");
         return threadPoolTaskScheduler;
     }
 
@@ -42,5 +44,10 @@ public class AsyncConfiguration implements AsyncConfigurer, SchedulingConfigurer
     @Bean
     public Executor scheduledTaskExecutor() {
         return Executors.newScheduledThreadPool(Constants.CORE_POOL_SIZE);
+    }
+
+    @Bean
+    public CronTrigger cronTrigger() {
+        return new CronTrigger("*/3 * * * * *");
     }
 }
