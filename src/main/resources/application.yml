@@ -6,8 +6,8 @@ spring:
       enabled: true
   rabbitmq:
     host: localhost
-    port: 5672
-    username: quest
-    password: quest
+    port: 61613
+    username: guest
+    password: guest
 server:
   port: 8080
