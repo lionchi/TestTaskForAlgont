@@ -52,28 +52,4 @@ public class StatisticsService implements Runnable {
         }
         return value < 0 ? 0 : ((int) (value * 100));
     }
-
-    // Второй способ получения
-   /* private double getProcessCpuLoad() {
-        try {
-            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            // Получаем имя объекта MBean
-            ObjectName name = ObjectName.getInstance("java.lang:type=OperatingSystem");
-            // Получаем список значений для MBean type=OperatingSystem
-            AttributeList list = mbs.getAttributes(name, new String[]{"ProcessCpuLoad"});
-            if (list.isEmpty()) {
-                return Double.NaN;
-            }
-            Attribute attribute = (Attribute) list.get(0);
-            Double value = (Double) attribute.getValue();
-            if (value == -1.0) {
-                return Double.NaN;
-            }
-            // возвращает процентное значение с точностью до 1 десятичной
-            return ((int) (value * 1000) / 10.0);
-        } catch (MalformedObjectNameException | InstanceNotFoundException | ReflectionException e) {
-            e.printStackTrace();
-        }
-        return 0.0;
-    }*/
 }
