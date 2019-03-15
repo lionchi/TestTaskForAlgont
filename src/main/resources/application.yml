@@ -11,3 +11,6 @@ spring:
     password: guest
 server:
   port: 8080
+max:
+  value:
+    cpu: 3

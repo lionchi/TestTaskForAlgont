@@ -33,7 +33,7 @@ function disconnect() {
 }
 
 function showGreeting(result) {
-    if (result === "CPU loaded more than 3%") {
+    if (result === "CPU loaded") {
         $("#status").append("<tr style='background-color: red'><td>" + result + "</td></tr>").addClass();
     } else {
         $("#status").append("<tr><td>" + result + "</td></tr>");
