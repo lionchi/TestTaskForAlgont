@@ -1,5 +1,6 @@
 package com.gavrilov.configuration;
 
+import com.gavrilov.services.MjpegService;
 import com.gavrilov.services.StatisticsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -25,12 +27,15 @@ public class WebSocketEventListener {
     private final ThreadPoolTaskScheduler taskScheduler;
     private final CronTrigger cronTrigger;
     private final StatisticsService statisticsService;
+    private final MjpegService mjpegService;
 
     @Autowired
-    public WebSocketEventListener(ThreadPoolTaskScheduler taskScheduler, CronTrigger cronTrigger, StatisticsService statisticsService) {
+    public WebSocketEventListener(ThreadPoolTaskScheduler taskScheduler, CronTrigger cronTrigger,
+                                  StatisticsService statisticsService, MjpegService mjpegService) {
         this.taskScheduler = taskScheduler;
         this.cronTrigger = cronTrigger;
         this.statisticsService = statisticsService;
+        this.mjpegService = mjpegService;
     }
 
 
@@ -38,8 +43,9 @@ public class WebSocketEventListener {
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         if (connection.size() == 0) {
-            ScheduledFuture<?> schedule = taskScheduler.schedule(statisticsService, cronTrigger);
-            schedules.add(schedule);
+            ScheduledFuture<?> scheduleRabbitmq = taskScheduler.schedule(statisticsService, cronTrigger);
+            ScheduledFuture<?> scheduleMjpeg = taskScheduler.schedule(mjpegService, cronTrigger);
+            schedules.addAll(Arrays.asList(scheduleRabbitmq, scheduleMjpeg));
         }
         connection.add((String) headerAccessor.getMessageHeaders().get("simpSessionId"));
     }
