@@ -5,11 +5,9 @@ function setConnected(connected) {
     $("#disconnect").prop("disabled", !connected);
     if (connected) {
         $("#conversation").show();
-    }
-    else {
+    } else {
         $("#conversation").hide();
     }
-    $("#status").html("");
 }
 
 function connect() {
@@ -33,10 +31,11 @@ function disconnect() {
 }
 
 function showGreeting(result) {
+    var statusRow = document.getElementById('status-row');
     if (result === "CPU loaded") {
-        $("#status").append("<tr style='background-color: red'><td>" + result + "</td></tr>").addClass();
+        statusRow.innerHTML="<td>" + result + "</td>" + "<td>" + "<img src='http://localhost:8080/imgError'>" + "</td>";
     } else {
-        $("#status").append("<tr><td>" + result + "</td></tr>");
+        statusRow.innerHTML = "<td>" + result + "</td>" + "<td>" + "<img src='http://localhost:8080/imgSuccess'>" + "</td>";
     }
 }
 

@@ -26,14 +26,16 @@ public class StatisticsService implements Runnable {
     @Override
     public void run() {
         int processCpuLoad = getProcessCpuLoad();
-        String result;
-        if (processCpuLoad < Integer.valueOf(maxValue)) {
-            result = "The CPU load is " + processCpuLoad + "%";
-        } else {
-            result = "CPU loaded";
+        if (processCpuLoad != 0) {
+            String result;
+            if (processCpuLoad < Integer.valueOf(maxValue)) {
+                result = "The CPU load is " + processCpuLoad + "%";
+            } else {
+                result = "CPU loaded";
+            }
+            rabbitTemplate.setExchange("rabbit-fanout-exchange");
+            rabbitTemplate.convertAndSend(result);
         }
-        rabbitTemplate.setExchange("rabbit-fanout-exchange");
-        rabbitTemplate.convertAndSend(result);
     }
 
     private int getProcessCpuLoad() {
