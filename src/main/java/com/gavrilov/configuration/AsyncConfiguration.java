@@ -48,6 +48,6 @@ public class AsyncConfiguration implements AsyncConfigurer, SchedulingConfigurer
 
     @Bean
     public CronTrigger cronTrigger() {
-        return new CronTrigger("*/4 * * * * *");
+        return new CronTrigger("*/2 * * * * *");
     }
 }

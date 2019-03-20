@@ -13,4 +13,4 @@ server:
   port: 8080
 max:
   value:
-    cpu: 8
+    cpu: 5

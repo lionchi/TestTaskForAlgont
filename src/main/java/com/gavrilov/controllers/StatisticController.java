@@ -6,15 +6,12 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
@@ -28,52 +25,13 @@ public class StatisticController {
         this.messagingTemplate = messagingTemplate;
     }
 
-    // Использовался для тестирования программы
+    //region Использовался для тестирования программы
     @MessageMapping("/cpu")
     @SendTo("/topic/statistic")
     public String getStatisticsCpu(@Payload String message) throws Exception {
         return "test";
     }
-
-    @SuppressWarnings("Duplicates")
-    @RequestMapping(value = "/imgSuccess")
-    public void getImgSuccess(HttpServletRequest request, HttpServletResponse response) {
-        try (OutputStream outputStream = response.getOutputStream()) {
-            response.setContentType("multipart/x-mixed-replace; boundary=--BoundaryString");
-            byte[] bytes = getImageAsByte("success");
-            outputStream.write((
-                    "--BoundaryString\r\n" +
-                            "Content-type: image/jpeg\r\n" +
-                            "Content-Length: " +
-                            bytes.length +
-                            "\r\n\r\n").getBytes());
-            outputStream.write(bytes);
-            outputStream.write("\r\n\r\n".getBytes());
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @SuppressWarnings("Duplicates")
-    @RequestMapping(value = "/imgError")
-    public void getImgError(HttpServletRequest request, HttpServletResponse response) {
-        try (OutputStream outputStream = response.getOutputStream()) {
-            response.setContentType("multipart/x-mixed-replace; boundary=--BoundaryString");
-            byte[] bytes = getImageAsByte("error");
-            outputStream.write((
-                    "--BoundaryString\r\n" +
-                            "Content-type: image/jpeg\r\n" +
-                            "Content-Length: " +
-                            bytes.length +
-                            "\r\n\r\n").getBytes());
-            outputStream.write(bytes);
-            outputStream.write("\r\n\r\n".getBytes());
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    //endregion
 
     @GetMapping(value = "/send/message/websocket")
     public ResponseEntity<?> getImgTest(@RequestParam(value = "result") String result) {
@@ -81,12 +39,11 @@ public class StatisticController {
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = "/img")
-    public void getImgTest(HttpServletRequest request, HttpServletResponse response) {
-        final String testText = "value 3%";
+    @RequestMapping(value = "/img/{value}")
+    public void getImgTest(HttpServletRequest request, HttpServletResponse response, @PathVariable String value) {
         try (OutputStream outputStream = response.getOutputStream()) {
             response.setContentType("multipart/x-mixed-replace; boundary=--BoundaryString");
-            byte[] bytes = testText.getBytes();
+            byte[] bytes = getImageAsByte(value);
             outputStream.write((
                     "--BoundaryString\r\n" +
                             "Content-type: image/jpeg\r\n" +
@@ -101,10 +58,15 @@ public class StatisticController {
         }
     }
 
-    private byte[] getImageAsByte(String nameImg) {
+    private byte[] getImageAsByte(String innerText) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            File image = new File(System.getProperty("user.dir") + File.separator + "img" + File.separator + nameImg + ".jpg");
+            File image = new File(System.getProperty("user.dir") + File.separator + "img" + File.separator + "fon.jpg");
             BufferedImage originalImage = ImageIO.read(image);
+            Graphics graphics = originalImage.getGraphics();
+            graphics.setFont(graphics.getFont().deriveFont(20f));
+            graphics.setColor(Color.black);
+            graphics.drawString(innerText + "%", 15, 30);
+            graphics.dispose();
             ImageIO.write(originalImage, "jpg", baos);
             baos.flush();
             return baos.toByteArray();

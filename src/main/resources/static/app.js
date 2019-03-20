@@ -1,4 +1,6 @@
-var stompClient = null;
+let stompClient = null;
+const urlWithMaxValue = 'http://localhost:8080/img/max';
+const urlWithValue = 'http://localhost:8080/img/';
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -11,7 +13,7 @@ function setConnected(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('/ws');
+    let socket = new SockJS('/ws');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
@@ -31,18 +33,24 @@ function disconnect() {
 }
 
 function showGreeting(result) {
-    var statusRow = document.getElementById('status-row');
+    let statusRow = document.getElementById('status-row');
     if (result === "CPU loaded") {
-        statusRow.innerHTML="<td>" + result + "</td>" + "<td>" + "<img src='http://localhost:8080/imgError'>" + "</td>";
+        statusRow.innerHTML = "<td style='background-color: red'>" + result + "</td>" + "<td>" + "<img id='image'>" + "</td>";
+        let querySelector = document.querySelector("image");
+        querySelector.setAttribute("src", urlWithMaxValue);
     } else {
-        statusRow.innerHTML = "<td>" + result + "</td>" + "<td>" + "<img src='http://localhost:8080/img'>" + "</td>";
+        let url = urlWithValue + result.substr(0, 1);
+        statusRow.innerHTML = "<td></td>" + "<td>" + "<img id='image'>" + "</td>";
+        let querySelector = document.querySelector("image");
+        querySelector.setAttribute("src", url);
     }
 }
 
-// Использовался для тестирования программы
+//region Использовался для тестирования программы
 function sendName() {
     stompClient.send("/api/cpu", {}, "test");
 }
+//endregion
 
 $(function () {
     $("form").on('submit', function (e) {
