@@ -1,7 +1,5 @@
 package com.gavrilov.configuration;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -13,8 +11,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitConfiguration {
-    private final Logger logger = LoggerFactory.getLogger(RabbitConfiguration.class);
-
     @Value("${spring.rabbitmq.host}")
     private String hostRabbitmq;
 

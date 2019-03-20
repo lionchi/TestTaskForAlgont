@@ -3,16 +3,14 @@ package com.gavrilov.services;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class StatisticsService extends AbstractService {
 
     private final RabbitTemplate rabbitTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Value("${max.value.cpu}")
     private String maxValue;
@@ -20,6 +18,7 @@ public class StatisticsService extends AbstractService {
     @Autowired
     public StatisticsService(RabbitTemplate rabbitTemplate, SimpMessagingTemplate messagingTemplate) {
         this.rabbitTemplate = rabbitTemplate;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Override
@@ -29,10 +28,7 @@ public class StatisticsService extends AbstractService {
             String result;
             if (processCpuLoad < Integer.valueOf(maxValue)) {
                 result = processCpuLoad + "%";
-                RestTemplate restTemplate = new RestTemplate();
-                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:8080/send/message/websocket")
-                        .queryParam("result", result);
-                restTemplate.getForObject(builder.build().encode().toUri(), ResponseEntity.class);
+                messagingTemplate.convertAndSend("/topic/statistic", result);
             } else {
                 result = "CPU loaded";
                 rabbitTemplate.setExchange("rabbit-fanout-exchange");

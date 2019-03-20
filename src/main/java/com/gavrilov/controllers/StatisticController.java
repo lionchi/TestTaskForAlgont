@@ -1,29 +1,23 @@
 package com.gavrilov.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 
 @RestController
 public class StatisticController {
-
-    private final SimpMessagingTemplate messagingTemplate;
-
-    @Autowired
-    public StatisticController(SimpMessagingTemplate messagingTemplate) {
-        this.messagingTemplate = messagingTemplate;
-    }
 
     //region Использовался для тестирования программы
     @MessageMapping("/cpu")
@@ -33,14 +27,8 @@ public class StatisticController {
     }
     //endregion
 
-    @GetMapping(value = "/send/message/websocket")
-    public ResponseEntity<?> getImgTest(@RequestParam(value = "result") String result) {
-        messagingTemplate.convertAndSend("/topic/statistic", result);
-        return ResponseEntity.ok().build();
-    }
-
     @RequestMapping(value = "/img/{value}")
-    public void getImgTest(HttpServletRequest request, HttpServletResponse response, @PathVariable String value) {
+    public void getImgTest(HttpServletResponse response, @PathVariable String value) {
         try (OutputStream outputStream = response.getOutputStream()) {
             response.setContentType("multipart/x-mixed-replace; boundary=--BoundaryString");
             byte[] bytes = getImageAsByte(value);
