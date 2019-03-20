@@ -35,7 +35,7 @@ function showGreeting(result) {
     if (result === "CPU loaded") {
         statusRow.innerHTML="<td>" + result + "</td>" + "<td>" + "<img src='http://localhost:8080/imgError'>" + "</td>";
     } else {
-        statusRow.innerHTML = "<td>" + result + "</td>" + "<td>" + "<img src='http://localhost:8080/imgSuccess'>" + "</td>";
+        statusRow.innerHTML = "<td>" + result + "</td>" + "<td>" + "<img src='http://localhost:8080/img'>" + "</td>";
     }
 }
 

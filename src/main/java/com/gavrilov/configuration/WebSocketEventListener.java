@@ -1,6 +1,5 @@
 package com.gavrilov.configuration;
 
-import com.gavrilov.services.MjpegService;
 import com.gavrilov.services.StatisticsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,15 +26,13 @@ public class WebSocketEventListener {
     private final ThreadPoolTaskScheduler taskScheduler;
     private final CronTrigger cronTrigger;
     private final StatisticsService statisticsService;
-    private final MjpegService mjpegService;
 
     @Autowired
     public WebSocketEventListener(ThreadPoolTaskScheduler taskScheduler, CronTrigger cronTrigger,
-                                  StatisticsService statisticsService, MjpegService mjpegService) {
+                                  StatisticsService statisticsService) {
         this.taskScheduler = taskScheduler;
         this.cronTrigger = cronTrigger;
         this.statisticsService = statisticsService;
-        this.mjpegService = mjpegService;
     }
 
 
@@ -44,8 +41,7 @@ public class WebSocketEventListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         if (connection.size() == 0) {
             ScheduledFuture<?> scheduleRabbitmq = taskScheduler.schedule(statisticsService, cronTrigger);
-            ScheduledFuture<?> scheduleMjpeg = taskScheduler.schedule(mjpegService, cronTrigger);
-            schedules.addAll(Arrays.asList(scheduleRabbitmq, scheduleMjpeg));
+            schedules.add(scheduleRabbitmq);
         }
         connection.add((String) headerAccessor.getMessageHeaders().get("simpSessionId"));
     }
